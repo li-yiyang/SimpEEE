@@ -1,8 +1,9 @@
 #+title: SimpEEE: a simple Emacs configure
 #+author: 凉凉
+#+startup: fold
 * About
 SimpEEE is a simple [[https://www.gnu.org/savannah-checkouts/gnu/emacs/emacs.html][Emacs]] configure.
-It is (mostly) for guys in my lab,
+It is (mostly) for guys in my lab [fn:why-emacs],
 focus (mostly) on AI agent assist.
 
 *NOTE*: if you need translation,
@@ -45,7 +46,48 @@ from elpa and git. Make sure you have a good web connection.
 Since it is recommanded to use =em [FILE]= to use emacsclient
 in TUI mode, the startup time could be ignored [fn:start-time].
 
+#+begin_quote
+*Using AI agents*: add =.emacs.d/bin= to =PATH=.
+#+end_quote
+
+It is also recommanded to setup [[https://codeberg.org/akib/emacs-eat][eat]] (if you're using bash):
+
+#+name: setup-eat-in-bash
+#+begin_src shell
+  # if you're using bash
+  [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
+  source "$EAT_SHELL_INTEGRATION_DIR/bash"
+#+end_src
+
+* Usage
+The emacs manual (=C-h i= opens the emacs manual) is
+always your friend. (Although you can also ask AI agent
+questions directly).
+
+*NOTE*: in emacs, the key stroke like =C-h i= is
+pressed like:
+
+1. press =Ctrl= and =h= together;
+2. release;
+3. press =i= 
+
+Other modifier keys are:
++ =M= (meta key, often =Alt= key on keyboard
+  or =Option= key on macOS keyboard);
++ =S= (super key, often =Win= key on keyboard
+  or =Command= key on macOS keyboard);
+
+If you are not familiar with the keys, you can use
+=C-h k= (=describe-key=) to describe the key stroke.
+
 * Footnotes
+
+[fn:why-emacs] why we choose to use emacs? Because most of
+the time we have to ssh into a headless server. Yes, vim
+could do so, but it's not so pleasant. And emacs is easy to
+extend, especially with ai assistance. So we could write
+frontends in emacs. 
+
 [fn:start-time] on my macOS M2 (8G), the start time is around
 1.5s (not so fast compared with my daily config). if you have
 the need to accelerate the start up time, open a issue or pr. 

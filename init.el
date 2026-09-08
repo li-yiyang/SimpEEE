@@ -36,9 +36,9 @@
 
 ;;; Disable warning
 ;; normally this is fine,
-;; you can even set `warning-minimum-level' to `:emergency'
+;; you can set `warning-minimum-level' to `:error' or `:warning'
 
-(setq warning-minimum-level :error)
+(setq warning-minimum-level :emergency)
 
 
 ;;;; emacs theme
@@ -98,9 +98,12 @@
 ;; as for melpa-stable, it is providing pimacs (pi agent in emacs)
 
 (add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/")
+             '("melpa" . "https://melpa.org/packages/")
              t)
 
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/")
+             t)
 
 ;;;; Agents
 
@@ -129,7 +132,15 @@
 
 (use-package company
   :ensure t
-  :hook (after-init . global-company-mode))
+  :hook (after-init . global-company-mode)
+  :config
+  ;; when in TUI mode, minibuffer eval expression
+  ;; should disable company for better experience
+  (unless (display-graphic-p)
+    (add-hook 'minibuffer-setup-hook
+              (lambda ()
+                (when (eq this-command 'eval-expression)
+                  (company-mode -1))))))
 
 ;;;; Git
 
@@ -235,23 +246,23 @@ This should be triggered by \\<global-map>\\[manual-save]. "
          (emacs-lisp-mode . paredit-mode)
          (paredit-mode    . hs-minor-mode))
   :bind ((:map lisp-mode-map
-               ("C-c C-f" . hs-toggle-hiding))))
+               ("C-c C-f" . hs-toggle-hiding)
+               ("M-h v"   . sly-describe-symbol)
+               ("M-h f"   . sly-describe-function)
+               ("M-h c"   . sly-who-calls)
+               ("M-h b"   . sly-who-binds)
+               ("M-h d"   . sly-edit-definition)
+               ("M-h h"   . sly-documentation-lookup)
+               ("M-h l"   . sly-hyperspec-lookup))
+         (:map emacs-lisp-mode-map
+               ("C-c C-f" . hs-toggle-hiding)
+               ("M-h v"   . describe-variable)
+               ("M-h f"   . describe-function)
+               ("M-h d"   . xref-find-definitions))))
 
 (use-package sly
   :ensure t
   :custom ((inferior-lisp-program "sbcl --dynamic-space-size 40960"))
-  :bind ((:map lisp-mode-map
-              ("M-h v" . sly-describe-symbol)
-              ("M-h f" . sly-describe-function)
-              ("M-h c" . sly-who-calls)
-              ("M-h b" . sly-who-binds)
-              ("M-h d" . sly-edit-definition)
-              ("M-h h" . sly-documentation-lookup)
-              ("M-h l" . sly-hyperspec-lookup))
-         (:map sly-mrepl-mode
-               ("C-<return>" . sly-mrepl-return)
-               ("S-<return>" . sly-mrepl-return)
-               ("RET"        . sly-mrepl-smart-return)))
   :config
 
   (defun sly-mrepl-smart-return ()
@@ -391,8 +402,13 @@ Return a string as buffer name like *eshell*[DIR]<> "
 (advice-add 'eshell/clear :filter-args
             (lambda (args) (if (null args) '(t) args)))
 
+;;; eshell/em:
+;; em in eshell
+
+
 ;;; eshell/imgcat:
 ;; display image(s) in eshell, this makes emacs an image viewer
+;; TODO: fix image display in TUI
 (defun eshell/imgcat (&rest args)
   "Display IMAGES in eshell.
 
@@ -439,6 +455,38 @@ Show IMAGE(s) file in eshell. ")
 
 (use-package posframe
   :ensure t)
+
+;; Tips: used to popup a child frame at mouse
+
+(use-package minibuffer-frame
+  :ensure t
+  :custom ((minibuffer-frame-width 0.8))
+  :config
+
+  ;; overwrite minibuffer-frame--init default frame init
+  (defun minibuffer-frame--init ()
+    "Create and center the minibuffer child frame."
+    (setq minibuffer-frame--frame
+          (make-frame
+           `((parent-frame             . ,(selected-frame))
+             (undecorated              . t)
+             (z-group                  . above)
+             (minibuffer               . only)
+             (width                    . ,minibuffer-frame-width)
+             (height                   . 1)
+             (left-fringe              . 15)
+             (right-fringe             . 5)
+             (child-frame-border-width . 2)
+             (foreground-color         . ,(face-foreground 'default))
+             (background-color         . ,(face-background 'company-tooltip)))))
+    (let ((pf (frame-parent minibuffer-frame--frame)))
+      (set-frame-position
+       minibuffer-frame--frame
+       (floor (- (frame-pixel-width pf) (frame-pixel-width minibuffer-frame--frame)) 2)
+       (floor (* (frame-text-height pf) minibuffer-frame-top)))))
+
+  (fido-vertical-mode 1)
+  (minibuffer-frame-mode 1))
 
 ;;;; Org
 
@@ -522,7 +570,15 @@ Show IMAGE(s) file in eshell. ")
 
 (use-package org
   :ensure t
-  :custom ((org-image-actual-width            nil)
+  :custom (;; Ref: https://sophiebos.io/posts/prettifying-emacs-org-mode/
+           (org-pretty-entities                          t)
+           (org-pretty-entities-include-sub-superscripts nil)
+           
+           (org-src-fontify-natively          t)
+           (org-src-tab-acts-natively         t)
+           (org-edit-src-content-indentation  0)
+           (org-image-actual-width            nil)
+           
            (org-latex-compiler                "xelatex")
            (org-preview-latex-default-process 'xelatex)
            (org-latex-pdf-process
@@ -533,6 +589,11 @@ Show IMAGE(s) file in eshell. ")
   :hook   ((org-babel-after-execute . org-display-inline-images)
            (org-mode                . setup-latex-prettify-symbol-mode)
            (org-mode                . setup-org-pyim-probe)))
+
+
+;;;; custom file
+
+(load custom-file t) ;; no error
 
 (provide 'init)
 

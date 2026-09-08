@@ -6,7 +6,8 @@
 # - if no emacs server is running, this will automatically create one
 
 if [ -z "$1" ]; then
-   emacsclient -a "" -t "$(pwd)"
+    emacsclient -a "" -t "$(pwd)"
+    exit $?
 fi
 
 target_file=""
