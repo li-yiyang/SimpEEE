@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+# Use emacsclient to edit file
+# - if file is sudo protected, this will automatically switch to sudo
+#   so no need to use sudo em <FILE>
+# - if no emacs server is running, this will automatically create one
+
+if [ -z "$1" ]; then
+   emacsclient -a "" -t "$(pwd)"
+fi
+
+target_file=""
+case "$1" in
+     /*) target_file="$1" ;;
+     *)  target_file="${PWD}/$1" ;;
+esac
+
+if [ -e "$target_file" ]; then
+   if [ -w "$target_file" ]; then
+      emacsclient -a "" -t "$target_file"
+   else
+      emacsclient -a "" -t "/sudo::$target_file"
+   fi
+else
+   # non-existing file
+   parent_dir=$(dirname "$target_file")
+
+   if [ -w "$parent_dir" ]; then
+      emacsclient -a "" -t "$target_file"
+   else
+      emacsclient -a "" -t "/sudo::$target_file"
+   fi
+fi
+
+# -*- mode: sh; -*-

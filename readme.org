@@ -1,0 +1,63 @@
+#+title: SimpEEE: a simple Emacs configure
+#+author: 凉凉
+* About
+SimpEEE is a simple [[https://www.gnu.org/savannah-checkouts/gnu/emacs/emacs.html][Emacs]] configure.
+It is (mostly) for guys in my lab,
+focus (mostly) on AI agent assist.
+
+*NOTE*: if you need translation,
+use [[https://immersivetranslate.com][Immersive Translation]] (web, browser extension).
+
+* Prepare
+** Install
+It is recommanded to use unix-like environment.
+
++ Emacs [fn:emacs-version]
++ [[https://pi.dev][pi-agent]]
+
+  #+name: install-pi-agent
+  #+begin_src shell
+  curl -fsSL https://pi.dev/install.sh | sh
+  #+end_src
+
+after setting up environment, you can clone
+this repo like:
+
+#+name: clone-dotemacs
+#+begin_src shell
+git clone https://github.com/li-yiyang/SimpEEE.git ~/.emacs.d
+#+end_src
+
+#+begin_quote
+*Using AI agents* [fn:about-using-ai-agent]: setup latest
+stable Emacs (on macOS, homebrew install emacs-plus; on linux,
+choose the system package manager), and clone the git repo
+=https://github.com/li-yiyang/SimpEEE.git= to =~/.emacs.d=
+as the emacs configure.
+#+end_quote
+
+** Setup
+It is recommanded to include =.emacs.d/bin= into =PATH=,
+where you can invoke =em [FILE]= to open them in emacsclient.
+
+The first time starting emacs would download alot of things
+from elpa and git. Make sure you have a good web connection.
+Since it is recommanded to use =em [FILE]= to use emacsclient
+in TUI mode, the startup time could be ignored [fn:start-time].
+
+* Footnotes
+[fn:start-time] on my macOS M2 (8G), the start time is around
+1.5s (not so fast compared with my daily config). if you have
+the need to accelerate the start up time, open a issue or pr. 
+
+[fn:emacs-version] It is recommanded to use newest (stable)
+Emacs, which came with more builtin functionalities.
+Normally, you can setup Emacs with your package manager
+easily. For example, on macOS, you can install emacs
+using [[https://brew.sh][homebrew]]: =brew install --cask d12frosted/emacs-plus/emacs-plus-app=;
+on Rocky Linux, for example, =dnf install emacs=.
+
+[fn:about-using-ai-agent] If you are tried of setting up
+environment, you can firstly setup a pi agent (for example,
+just [[install-pi-agent][one line]] installing pi agent). And use the prompt
+after *Using AI agents* to ask AI to do it for you.
