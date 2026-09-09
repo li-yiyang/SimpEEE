@@ -487,6 +487,29 @@ Show IMAGE(s) file in eshell. ")
   (fido-vertical-mode 1)
   (minibuffer-frame-mode 1))
 
+;; minimal modeline
+
+;; Tips: C-h r Mode Line will teach you how to use modeline
+;; `describe-variable' of `mode-line-format' will tell you
+;; how to customize mode line.
+
+(setq mode-line-right-align-edge 'window)
+(setq-default mode-line-format
+              `("%e "
+                mode-line-buffer-identification
+                mode-line-format-right-align
+                " L%l "
+                (sly-mode ("[" sly--mode-line-format "]"))
+                "["
+                (:propertize ("" mode-name)
+                             help-echo "Major mode
+mouse-1: Display major mode menu 
+mouse-2: Show help for major mode 
+mouse-3: Toggle minor modes"
+                             mouse-face mode-line-highlight
+                             local-map ,mode-line-major-mode-keymap)
+                "]"))
+
 ;;;; Org
 
 ;; Tips: org-mode is a good thing
