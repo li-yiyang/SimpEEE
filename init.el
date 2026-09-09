@@ -164,6 +164,17 @@
       large-hscroll-threshold 1000
       syntax-wholeline-max    1000)
 
+;; Coding System
+;; use UTF-8 as default coding system,
+;; this should be no question on most unix-like system.
+;; just in case.
+
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
 ;; Tips: no need to manually save your code.
 ;; `auto-save-delete-trailing-whitespace-except-current-line' deletes trailing
 ;; whitespaces to format the code.
@@ -306,18 +317,6 @@ otherwise, call `newline'. "
       (apply orig-fun args)))
   (advice-add 'hyperspec-lookup :around #'hyperspec-lookup--hyperspec-lookup-eww)
   )
-
-(use-package gaudy-cl
-  :after sly
-  :ensure t
-  :vc (:url "https://codeberg.org/zshaftel/gaudy-cl.git"
-            :ignored-files ("/gaudy-cl-sly.el"
-                            "/gaudy-cl-slime.el"
-                            "/gaudy-cl-tests.el")
-            :rev :newest)
-  :config
-  (setopt gaudy-cl-backend 'sly)
-  (gaudy-cl-setup))
 
 ;;;; Eshell
 
@@ -568,15 +567,39 @@ Show IMAGE(s) file in eshell. ")
                 pyim-probe-org-src-block
                 ,@pyim-english-input-switch-functions)))
 
+(defvar org-prettify-symbols-alist
+  '(("#+BEGIN_SRC" . "┏")
+    ("#+END_SRC"   . "┗")
+    ("#+begin_src" . "┏")
+    ("#+end_src"   . "┗")
+    ("->"          . "→")
+    ("<-"          . "←"))
+  "`prettify-symbols-alist' for org mode. ")
+
+(defun setup-org-prettify-symbol-mode ()
+  "Setup Org prettify symbol. "
+  (setq-local prettify-symbols-alist
+              (append prettify-symbols-alist
+                      org-prettify-symbols-alist))
+  (prettify-symbols-mode 1))
+
+(use-package org-appear
+  :ensure t
+  :hook (org-mode . org-appear-mode))
+
 (use-package org
   :ensure t
   :custom (;; Ref: https://sophiebos.io/posts/prettifying-emacs-org-mode/
+           ;; Ref: https://mstempl.netlify.app/post/beautify-org-mode/
+           ;; Ref: https://emacs-china.org/t/org/19458/
            (org-pretty-entities                          t)
            (org-pretty-entities-include-sub-superscripts nil)
-           
+           (prettify-symbols-unprettify-at-point        'right-edge)
+           (org-hide-emphasis-markers                   t)
+
            (org-src-fontify-natively          t)
            (org-src-tab-acts-natively         t)
-           (org-edit-src-content-indentation  0)
+           (org-edit-src-content-indentation  2)
            (org-image-actual-width            nil)
            
            (org-latex-compiler                "xelatex")
@@ -588,7 +611,9 @@ Show IMAGE(s) file in eshell. ")
               "xelatex -interaction nonstopmode -output-directory %o %f")))
   :hook   ((org-babel-after-execute . org-display-inline-images)
            (org-mode                . setup-latex-prettify-symbol-mode)
-           (org-mode                . setup-org-pyim-probe)))
+           (org-mode                . setup-org-prettify-symbol-mode)
+           (org-mode                . setup-org-pyim-probe)
+           (org-mode                . org-num-mode)))
 
 
 ;;;; custom file

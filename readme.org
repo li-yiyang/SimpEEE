@@ -18,7 +18,7 @@ It is recommanded to use unix-like environment.
 
   #+name: install-pi-agent
   #+begin_src shell
-  curl -fsSL https://pi.dev/install.sh | sh
+    curl -fsSL https://pi.dev/install.sh | sh
   #+end_src
 
 after setting up environment, you can clone
@@ -26,7 +26,7 @@ this repo like:
 
 #+name: clone-dotemacs
 #+begin_src shell
-git clone https://github.com/li-yiyang/SimpEEE.git ~/.emacs.d
+  git clone https://github.com/li-yiyang/SimpEEE.git ~/.emacs.d
 #+end_src
 
 #+begin_quote
