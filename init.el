@@ -318,6 +318,12 @@ otherwise, call `newline'. "
   (advice-add 'hyperspec-lookup :around #'hyperspec-lookup--hyperspec-lookup-eww)
   )
 
+;;;; JSON
+
+;; use 2 indent for JS and JSON by default
+
+(setq js-indent-level 2)
+
 ;;;; Eshell
 
 ;; eshell is very powerful in emacs, most of the operations could be
