@@ -444,14 +444,20 @@ Show IMAGE(s) file in eshell. ")
 
 ;;;; Pyim
 
+(use-package pyim-basedict
+  :ensure t
+  :config
+  (pyim-basedict-enable))
+
 (use-package pyim
   :ensure t
   :custom ((default-input-method                 "pyim")
+           (pyim-default-scheme                  'quanpin)
            (pyim-punctuation-dict                 nil)
            (pyim-punctuation-translate-p        '(no auto yes))
            (pyim-english-input-switch-functions '(pyim-probe-program-mode))
-           (pyim-page-length                     5)
-           (pyim-page-tooltip                   'posframe))
+           (pyim-page-length                      5)
+           (pyim-page-tooltip                    'posframe))
   :config
   ;; use pyim in isearch
   (pyim-isearch-mode 1))
